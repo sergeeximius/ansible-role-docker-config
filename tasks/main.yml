@@ -7,11 +7,18 @@
   changed_when: false
 
 - name: Parse existing daemon.json
-  ansible.builtin.set_fact:
-    docker_config_data: "{{ docker_daemon_content['content'] | b64decode | from_json }}"
   when:
     - docker_daemon_content is succeeded
     - docker_daemon_content['content'] is defined
+  block:
+    - name: Parse JSON content
+      ansible.builtin.set_fact:
+        docker_config_data: "{{ docker_daemon_content['content'] | b64decode | from_json }}"
+  rescue:
+    - name: Handle invalid JSON
+      ansible.builtin.set_fact:
+        docker_config_data: {}
+
 - name: Set empty config if file doesn't exist or invalid
   ansible.builtin.set_fact:
     docker_config_data: {}

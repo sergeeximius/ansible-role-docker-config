@@ -4,4 +4,3 @@
     name: docker
     state: restarted
   when: docker_config_restart | default(true) | bool
-  failed_when: false

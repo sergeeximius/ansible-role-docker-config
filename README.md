@@ -9,24 +9,16 @@ Ansible role for managing Docker daemon configuration (`/etc/docker/daemon.json`
 
 ## Role Variables
 
-| Name                                | Default                   | Description                                                       |
-| ----------------------------------- | ------------------------- | ----------------------------------------------------------------- |
-| `docker_config_enabled`             | `true`                    | Enable/disable role execution                                     |
-| `docker_config_restart`             | `true`                    | Restart Docker service after config change                        |
-| `docker_config_daemon_json_path`    | `/etc/docker/daemon.json` | Path to daemon configuration file                                 |
-| `docker_config_mirror`              | `{}`                      | Docker registry mirror configuration (dict with `registry` key)   |
-| `docker_config_daemon_json_mirrors` | `[]`                      | List of registry mirrors (deprecated, use `docker_config_mirror`) |
+| Name                   | Default                                          | Description                                     |
+| ---------------------- | ------------------------------------------------ | ----------------------------------------------- |
+| `docker_config_mirror` | `{registry: "https://dockerhub.timeweb.cloud"}`  | Docker registry mirror configuration (dict with `registry` key) |
+| `docker_config_restart`| `true`                                           | Restart Docker service after config change      |
 
 ### Example Configuration
 
 ```yaml
-# Modern approach (recommended)
 docker_config_mirror:
   registry: "https://dockerhub.timeweb.cloud"
-
-# Legacy approach (still supported)
-docker_config_daemon_json_mirrors:
-  - "https://dockerhub.timeweb.cloud"
 ```
 
 ## Dependencies
@@ -42,9 +34,10 @@ None.
   become: true
   roles:
     - role: ansible-role-docker-config
-      docker_config_mirror:
-        registry: "https://dockerhub.timeweb.cloud"
-      docker_config_restart: true
+      vars:
+        docker_config_mirror:
+          registry: "https://dockerhub.timeweb.cloud"
+        docker_config_restart: true
 ```
 
 ### Advanced Example
@@ -56,9 +49,10 @@ None.
   become: true
   roles:
     - role: ansible-role-docker-config
-      docker_config_mirror:
-        registry: "https://mirror.example.com"
-      docker_config_restart: false # Disable restart if manual control needed
+      vars:
+        docker_config_mirror:
+          registry: "https://mirror.example.com"
+        docker_config_restart: false  # Disable restart if manual control needed
 ```
 
 ## Testing
