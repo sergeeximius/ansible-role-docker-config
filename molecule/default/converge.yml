@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  roles:
+    - role: ansible-role-docker-config
+      vars:
+        docker_config_mirror:
+          registry: "https://dockerhub.timeweb.cloud"
+        docker_config_restart: false

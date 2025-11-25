@@ -1,0 +1,4 @@
+{%- set config = docker_config_data | default({}) -%}
+{%- set merged_mirrors = ((config['registry-mirrors'] | default([])) + [docker_config_mirror.registry]) | unique -%}
+{%- set merged = config | combine({'registry-mirrors': merged_mirrors}) -%}
+{{ merged | to_nice_json }}

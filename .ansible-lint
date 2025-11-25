@@ -1,0 +1,13 @@
+---
+
+# ansible-lint configuration
+
+# Exclude molecule converge - uses role name which causes false positive in syntax-check
+
+exclude_paths:
+
+- .git/
+- .tox/
+- **pycache**/
+- molecule/default/tests/
+- molecule/default/converge.yml

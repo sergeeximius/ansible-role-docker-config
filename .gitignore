@@ -1,0 +1,8 @@
+.vscode/
+.ansible/
+.molecule/
+.vagrant/
+.tox/
+*.retry
+__pycache__/
+*.pyc

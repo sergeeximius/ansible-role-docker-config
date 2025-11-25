@@ -1,3 +1,4 @@
 ---
-docker_mirror:
+docker_config_mirror:
   registry: "https://dockerhub.timeweb.cloud"
+docker_config_restart: true

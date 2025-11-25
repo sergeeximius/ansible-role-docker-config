@@ -1,29 +1,31 @@
-- name: Проверка наличия файла /etc/docker/daemon.json
-  ansible.builtin.stat:
-    path: /etc/docker/daemon.json
-  register: docker_daemon_json
+---
+- name: Read existing daemon.json if present
+  ansible.builtin.slurp:
+    src: /etc/docker/daemon.json
+  register: docker_daemon_content
+  failed_when: false
+  changed_when: false
 
-- name: Если файл существует
-  when: docker_daemon_json.stat.exists
-  block:
-    - name: Считывание содержимого daemon.json
-      ansible.builtin.slurp:
-        src: /etc/docker/daemon.json
-      register: docker_daemon_content
-
-    - name: Установка переменной с содержимым файла daemon.json
-      ansible.builtin.set_fact:
-        docker_config: "{{ (docker_daemon_content['content'] | b64decode | from_json) }}"
-
-- name: Добавление registry-mirrors в переменную docker_config
+- name: Parse existing daemon.json
   ansible.builtin.set_fact:
-    docker_config: "{{ docker_config | default({}) | combine({'registry-mirrors': [docker_mirror.registry]}) }}"
+    docker_config_data: "{{ docker_daemon_content['content'] | b64decode | from_json }}"
+  when:
+    - docker_daemon_content is succeeded
+    - docker_daemon_content['content'] is defined
+  failed_when: false
 
-- name: Создание или обновление файла /etc/docker/daemon.json
-  ansible.builtin.copy:
+- name: Set empty config if file doesn't exist or invalid
+  ansible.builtin.set_fact:
+    docker_config_data: {}
+  when: docker_config_data is not defined
+
+- name: Deploy /etc/docker/daemon.json
+  ansible.builtin.template:
+    src: daemon.json.j2
     dest: /etc/docker/daemon.json
-    content: "{{ docker_config | to_nice_json }}"
     owner: root
     group: root
-    mode: '0644'
-  notify: Reload docker
+    mode: "0644"
+    backup: true
+    validate: python3 -m json.tool %s
+  notify: Restart docker
