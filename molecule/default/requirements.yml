@@ -1,0 +1,4 @@
+---
+# No role dependencies required for testing
+# Tests create /etc/docker directory manually in prepare.yml
+roles: []

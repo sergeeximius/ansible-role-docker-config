@@ -1,5 +1,6 @@
 ---
-- name: Reload docker
-  ansible.builtin.systemd:
+- name: Restart docker
+  ansible.builtin.service:
     name: docker
-    state: reloaded
+    state: restarted
+  when: docker_config_restart | default(true) | bool
