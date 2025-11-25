@@ -12,8 +12,6 @@
   when:
     - docker_daemon_content is succeeded
     - docker_daemon_content['content'] is defined
-  failed_when: false
-
 - name: Set empty config if file doesn't exist or invalid
   ansible.builtin.set_fact:
     docker_config_data: {}
