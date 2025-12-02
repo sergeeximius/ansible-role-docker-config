@@ -1,6 +1,7 @@
 # ansible-role-docker-config
 
 Ansible role for managing Docker daemon configuration (`/etc/docker/daemon.json`).
+Supports registry mirrors, DNS servers, and IPv6 settings.
 
 ## Requirements
 
@@ -9,16 +10,25 @@ Ansible role for managing Docker daemon configuration (`/etc/docker/daemon.json`
 
 ## Role Variables
 
-| Name                   | Default                                          | Description                                     |
-| ---------------------- | ------------------------------------------------ | ----------------------------------------------- |
-| `docker_config_mirror` | `{registry: "https://dockerhub.timeweb.cloud"}`  | Docker registry mirror configuration (dict with `registry` key) |
-| `docker_config_restart`| `true`                                           | Restart Docker service after config change      |
+| Name                    | Default                                            | Description                                                     |
+| ----------------------- | -------------------------------------------------- | --------------------------------------------------------------- |
+| `docker_config_mirror`  | `{registry: "https://dockerhub.timeweb.cloud"}`    | Docker registry mirror configuration (dict with `registry` key) |
+| `docker_config_dns`     | `["77.88.8.8", "77.88.8.1", "8.8.8.8", "1.1.1.1"]` | List of DNS servers for Docker containers                       |
+| `docker_config_ipv6`    | `false`                                            | Enable or disable IPv6 in Docker                                |
+| `docker_config_restart` | `true`                                             | Restart Docker service after config change                      |
 
 ### Example Configuration
 
 ```yaml
 docker_config_mirror:
   registry: "https://dockerhub.timeweb.cloud"
+docker_config_dns:
+  - "77.88.8.8"
+  - "77.88.8.1"
+  - "8.8.8.8"
+  - "1.1.1.1"
+docker_config_ipv6: false
+docker_config_restart: true
 ```
 
 ## Dependencies
@@ -37,14 +47,18 @@ None.
       vars:
         docker_config_mirror:
           registry: "https://dockerhub.timeweb.cloud"
+        docker_config_dns:
+          - "77.88.8.8"
+          - "77.88.8.1"
+        docker_config_ipv6: false
         docker_config_restart: true
 ```
 
-### Advanced Example
+### Advanced Example with Custom DNS and IPv6
 
 ```yaml
 ---
-- name: Configure Docker daemon with custom settings
+- name: Configure Docker daemon with full customization
   hosts: docker_hosts
   become: true
   roles:
@@ -52,7 +66,23 @@ None.
       vars:
         docker_config_mirror:
           registry: "https://mirror.example.com"
-        docker_config_restart: false  # Disable restart if manual control needed
+        docker_config_dns:
+          - "8.8.8.8"
+          - "8.8.4.4"
+          - "1.1.1.1"
+        docker_config_ipv6: true # Enable IPv6 if needed
+        docker_config_restart: true
+```
+
+### Minimal Example (Using Defaults)
+
+```yaml
+---
+- name: Configure Docker with defaults
+  hosts: docker_hosts
+  become: true
+  roles:
+    - role: ansible-role-docker-config
 ```
 
 ## Testing

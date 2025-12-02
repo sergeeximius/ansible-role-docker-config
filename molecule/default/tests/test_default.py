@@ -45,3 +45,26 @@ def test_mirror_present(host):
     assert any(
         "timeweb" in m or "dockerhub" in m for m in mirrors
     ), f"Expected mirror not found. Found: {mirrors}"
+
+
+def test_dns_servers_configured(host):
+    """Test that DNS servers are configured."""
+    daemon_json = host.file("/etc/docker/daemon.json")
+    data = json.loads(daemon_json.content_string)
+    dns_servers = data.get("dns", [])
+
+    assert isinstance(dns_servers, list), "dns should be a list"
+    assert len(dns_servers) > 0, "dns list is empty"
+    assert (
+        "77.88.8.8" in dns_servers or "8.8.8.8" in dns_servers
+    ), f"Expected DNS servers not found. Found: {dns_servers}"
+
+
+def test_ipv6_config_is_false(host):
+    """Test that the ipv6 key in daemon.json is set to false."""
+    daemon_json = host.file("/etc/docker/daemon.json")
+    data = json.loads(daemon_json.content_string)
+    ipv6 = data.get("ipv6")
+
+    assert ipv6 is not None, "ipv6 key not found in daemon.json"
+    assert ipv6 is False, f"ipv6 should be false by default, but got: {ipv6}"

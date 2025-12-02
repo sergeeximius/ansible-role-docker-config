@@ -1,4 +1,17 @@
 ---
+# Docker registry mirror configuration
 docker_config_mirror:
   registry: "https://dockerhub.timeweb.cloud"
+
+# Docker DNS servers
+docker_config_dns:
+  - "77.88.8.8"
+  - "77.88.8.1"
+  - "8.8.8.8"
+  - "1.1.1.1"
+
+# Disable IPv6 in Docker
+docker_config_ipv6: false
+
+# Restart Docker service after config change
 docker_config_restart: true
