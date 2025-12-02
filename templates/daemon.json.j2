@@ -1,5 +1,12 @@
 {%- set config = docker_config_data | default({}) -%}
 {%- set new_mirror = docker_config_mirror.registry | default('') -%}
 {%- set merged_mirrors = ((config['registry-mirrors'] | default([])) + ([new_mirror] if new_mirror else [])) | unique -%}
-{%- set merged = config | combine({'registry-mirrors': merged_mirrors}) -%}
+{%- set updates = {'registry-mirrors': merged_mirrors} -%}
+{%- if docker_config_dns is defined and docker_config_dns | length > 0 -%}
+  {%- set _ = updates.update({'dns': docker_config_dns}) -%}
+{%- endif -%}
+{%- if docker_config_ipv6 is defined -%}
+  {%- set _ = updates.update({'ipv6': docker_config_ipv6}) -%}
+{%- endif -%}
+{%- set merged = config | combine(updates) -%}
 {{ merged | to_nice_json }}
