@@ -60,8 +60,8 @@ def test_dns_servers_configured(host):
     ), f"Expected DNS servers not found. Found: {dns_servers}"
 
 
-def test_ipv6_disabled(host):
-    """Test that IPv6 is disabled by default."""
+def test_ipv6_config_is_false(host):
+    """Test that the ipv6 key in daemon.json is set to false."""
     daemon_json = host.file("/etc/docker/daemon.json")
     data = json.loads(daemon_json.content_string)
     ipv6 = data.get("ipv6")
