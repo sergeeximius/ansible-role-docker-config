@@ -2,7 +2,7 @@
 {%- set new_mirror = docker_config_mirror.registry | default('') -%}
 {%- set merged_mirrors = ((config['registry-mirrors'] | default([])) + ([new_mirror] if new_mirror else [])) | unique -%}
 {%- set updates = {'registry-mirrors': merged_mirrors} -%}
-{%- if docker_config_dns is defined and docker_config_dns | length > 0 -%}
+{%- if docker_config_dns is defined and docker_config_dns is iterable and docker_config_dns is not string and docker_config_dns | length > 0 -%}
   {%- set _ = updates.update({'dns': docker_config_dns}) -%}
 {%- endif -%}
 {%- if docker_config_ipv6 is defined -%}
